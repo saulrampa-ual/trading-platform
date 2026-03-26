@@ -1,21 +1,10 @@
 {
   "annotations": {
-    "list": [
-      {
-        "builtIn": 1,
-        "datasource": "-- Grafana --",
-        "enable": true,
-        "hide": true,
-        "iconColor": "rgba(0, 211, 255, 1)",
-        "name": "Annotations & Alerts",
-        "type": "dashboard"
-      }
-    ]
+    "list": []
   },
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": null,
   "links": [],
   "panels": [
     {
@@ -25,25 +14,22 @@
       },
       "fieldConfig": {
         "defaults": {
-          "custom": {
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            }
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {"color": "green", "value": null}
+            ]
           }
         },
         "overrides": []
       },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 0
-      },
+      "gridPos": {"h": 4, "w": 6, "x": 0, "y": 0},
       "id": 1,
       "options": {
-        "displayMode": "table",
         "orientation": "horizontal",
         "reduceOptions": {
           "calcs": ["lastNotNull"],
@@ -53,26 +39,20 @@
         "showThresholdLabels": false,
         "showThresholdMarkers": true
       },
-      "pluginVersion": "9.0.0",
+      "pluginVersion": "10.2.0",
       "targets": [
         {
-          "query": "from(bucket: \"market_data\")\n  |> range(start: -10m)\n  |> filter(fn: (r) => r._measurement == \"ohlc\")\n  |> filter(fn: (r) => r.symbol == \"BINANCE:BTCUSDT\")\n  |> last()\n  |> yield(name: \"last\")",
+          "query": "from(bucket: \"market_data\") |> range(start: -5m) |> filter(fn: (r) => r._measurement == \"ohlc\" and r.symbol == \"BINANCE:BTCUSDT\") |> last() |> yield(name: \"last\")",
           "refId": "A"
         }
       ],
-      "title": "Último Precio - BTCUSDT",
+      "title": "Último Precio BTCUSDT",
       "type": "stat"
     },
     {
-      "datasource": {
-        "type": "influxdb",
-        "uid": "influxdb"
-      },
+      "datasource": {"type": "influxdb", "uid": "influxdb"},
       "fieldConfig": {
         "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
           "custom": {
             "axisCenteredZero": false,
             "axisColorMode": "text",
@@ -82,66 +62,30 @@
             "drawStyle": "line",
             "fillOpacity": 0,
             "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
+            "hideFrom": {"legend": false, "tooltip": false, "viz": false},
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
+            "scaleDistribution": {"type": "linear"},
             "showPoints": "auto",
             "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
+            "stacking": {"group": "A", "mode": "none"},
+            "thresholdsStyle": {"mode": "off"}
           },
           "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
+          "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}]}
         },
         "overrides": []
       },
-      "gridPos": {
-        "h": 12,
-        "w": 12,
-        "x": 0,
-        "y": 8
-      },
+      "gridPos": {"h": 12, "w": 12, "x": 0, "y": 4},
       "id": 2,
       "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
+        "legend": {"calcs": [], "displayMode": "list", "placement": "bottom", "showLegend": true},
+        "tooltip": {"mode": "single", "sort": "none"}
       },
       "targets": [
         {
-          "query": "from(bucket: \"market_data\")\n  |> range(start: -1h)\n  |> filter(fn: (r) => r._measurement == \"ohlc\")\n  |> filter(fn: (r) => r.symbol == \"BINANCE:BTCUSDT\")\n  |> filter(fn: (r) => r._field == \"close\" or r._field == \"high\" or r._field == \"low\" or r._field == \"open\")\n  |> aggregateWindow(every: 1m, fn: mean)\n  |> pivot(rowKey: [\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")\n  |> yield(name: \"ohlc\")",
+          "query": "from(bucket: \"market_data\") |> range(start: -1h) |> filter(fn: (r) => r._measurement == \"ohlc\" and r.symbol == \"BINANCE:BTCUSDT\") |> pivot(rowKey: [\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\") |> yield(name: \"ohlc\")",
           "refId": "A"
         }
       ],
@@ -149,15 +93,9 @@
       "type": "timeseries"
     },
     {
-      "datasource": {
-        "type": "influxdb",
-        "uid": "influxdb"
-      },
+      "datasource": {"type": "influxdb", "uid": "influxdb"},
       "fieldConfig": {
         "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
           "custom": {
             "axisCenteredZero": false,
             "axisColorMode": "text",
@@ -167,66 +105,30 @@
             "drawStyle": "bars",
             "fillOpacity": 50,
             "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
+            "hideFrom": {"legend": false, "tooltip": false, "viz": false},
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
+            "scaleDistribution": {"type": "linear"},
             "showPoints": "auto",
             "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
+            "stacking": {"group": "A", "mode": "none"},
+            "thresholdsStyle": {"mode": "off"}
           },
           "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
+          "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}]}
         },
         "overrides": []
       },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 8
-      },
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 4},
       "id": 3,
       "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
+        "legend": {"calcs": [], "displayMode": "list", "placement": "bottom", "showLegend": true},
+        "tooltip": {"mode": "single", "sort": "none"}
       },
       "targets": [
         {
-          "query": "from(bucket: \"market_data\")\n  |> range(start: -1h)\n  |> filter(fn: (r) => r._measurement == \"ohlc\")\n  |> filter(fn: (r) => r.symbol == \"BINANCE:BTCUSDT\")\n  |> filter(fn: (r) => r._field == \"volume\")\n  |> aggregateWindow(every: 1m, fn: sum)\n  |> yield(name: \"volume\")",
+          "query": "from(bucket: \"market_data\") |> range(start: -1h) |> filter(fn: (r) => r._measurement == \"ohlc\" and r.symbol == \"BINANCE:BTCUSDT\" and r._field == \"volume\") |> aggregateWindow(every: 1m, fn: sum) |> yield(name: \"volume\")",
           "refId": "A"
         }
       ],
@@ -234,17 +136,11 @@
       "type": "timeseries"
     }
   ],
-  "refresh": "10s",
-  "schemaVersion": 36,
-  "style": "dark",
+  "refresh": "5s",
+  "schemaVersion": 38,
   "tags": ["trading", "crypto"],
-  "templating": {
-    "list": []
-  },
-  "time": {
-    "from": "now-1h",
-    "to": "now"
-  },
+  "templating": {"list": []},
+  "time": {"from": "now-30m", "to": "now"},
   "timepicker": {},
   "timezone": "browser",
   "title": "Trading Monitor",
