@@ -1,23 +1,43 @@
-FROM apache/spark:4.1.1
+FROM apache/spark:4.0.0
 
 USER root
 
-# Instalar Python 3.13
+# Instalar Python 3 + pip (Python 3.11 disponible en Debian Bookworm)
 RUN apt-get update && \
-    apt-get install -y software-properties-common && \
-    add-apt-repository -y ppa:deadsnakes/ppa && \
-    apt-get update && \
-    apt-get install -y python3.13 python3.13-distutils python3-pip && \
+    apt-get install -y python3 python3-pip python3-venv curl && \
     apt-get clean && rm -rf /var/lib/apt/lists/* && \
-    update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.13 1 && \
-    update-alternatives --set python3 /usr/bin/python3.13
+    ln -sf /usr/bin/python3 /usr/bin/python
 
 # Instalar dependencias Python
 COPY requirements.txt /tmp/requirements.txt
-RUN pip3 install --upgrade pip && \
-    pip3 install -r /tmp/requirements.txt
+RUN pip3 install --no-cache-dir -r /tmp/requirements.txt
 
-ENV PYSPARK_PYTHON=python3.13
-ENV PYSPARK_WORKER_PYTHON=python3.13
+# Descargar jars necesarios para Kafka + Spark
+# Usamos Spark 4.0 / Scala 2.13
+RUN curl -fsSL \
+    https://repo1.maven.org/maven2/org/apache/spark/spark-sql-kafka-0-10_2.13/4.0.0/spark-sql-kafka-0-10_2.13-4.0.0.jar \
+    -o /opt/spark/jars/spark-sql-kafka-0-10_2.13-4.0.0.jar && \
+    curl -fsSL \
+    https://repo1.maven.org/maven2/org/apache/kafka/kafka-clients/3.4.0/kafka-clients-3.4.0.jar \
+    -o /opt/spark/jars/kafka-clients-3.4.0.jar && \
+    curl -fsSL \
+    https://repo1.maven.org/maven2/org/apache/spark/spark-token-provider-kafka-0-10_2.13/4.0.0/spark-token-provider-kafka-0-10_2.13-4.0.0.jar \
+    -o /opt/spark/jars/spark-token-provider-kafka-0-10_2.13-4.0.0.jar && \
+    curl -fsSL \
+    https://repo1.maven.org/maven2/org/apache/commons/commons-pool2/2.11.1/commons-pool2-2.11.1.jar \
+    -o /opt/spark/jars/commons-pool2-2.11.1.jar
+
+ENV PYSPARK_PYTHON=python3
+ENV PYSPARK_DRIVER_PYTHON=python3
 
 USER spark
+
+# Copiar scripts de entrypoint
+COPY entrypoint-master.sh /opt/spark/entrypoint-master.sh
+COPY entrypoint-worker.sh /opt/spark/entrypoint-worker.sh
+
+RUN chmod +x /opt/spark/entrypoint-master.sh /opt/spark/entrypoint-worker.sh
+
+# Definir un entrypoint por defecto (opcional)
+# Para master: CMD ["/opt/spark/entrypoint-master.sh"]
+# Para worker: CMD ["/opt/spark/entrypoint-worker.sh", "spark://spark-master:7077"]

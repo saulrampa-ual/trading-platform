@@ -1,0 +1,46 @@
+# grafana/alerting/volatility-alert.yaml
+apiVersion: 1
+groups:
+  - orgId: 1
+    name: Trading Alerts
+    folder: Trading
+    interval: 1m
+    rules:
+      - uid: volatility-alert-001
+        title: "Alerta de volatilidad BTCUSDT"
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: influxdb
+            model:
+              query: >
+                from(bucket: "market_data")
+                |> range(start: -5m)
+                |> filter(fn: (r) => r._measurement == "ohlc" and r.symbol == "BINANCE:BTCUSDT")
+                |> filter(fn: (r) => r._field == "high" or r._field == "low")
+                |> pivot(rowKey:["_time"], columnKey:["_field"], valueColumn:"_value")
+                |> map(fn: (r) => ({ r with spread: (r.high - r.low) / r.low * 100.0 }))
+                |> filter(fn: (r) => r.spread > 0)
+                |> last()
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              type: threshold
+              conditions:
+                - evaluator:
+                    type: gt
+                    params: [0.5]   # alerta si spread > 0.5%
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
+        noDataState: NoData
+        execErrState: Error
+        for: 0s
+        annotations:
+          summary: "Volatilidad alta en BTCUSDT"
+        labels:
+          severity: warning
