@@ -10,7 +10,7 @@
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "influxdb"
+        "uid": "P951FEA4DE68E13C5"
       },
       "fieldConfig": {
         "defaults": {
@@ -50,7 +50,7 @@
       "type": "stat"
     },
     {
-      "datasource": {"type": "influxdb", "uid": "influxdb"},
+      "datasource": {"type": "influxdb", "uid": "P951FEA4DE68E13C5"},
       "fieldConfig": {
         "defaults": {
           "custom": {
@@ -93,7 +93,7 @@
       "type": "timeseries"
     },
     {
-      "datasource": {"type": "influxdb", "uid": "influxdb"},
+      "datasource": {"type": "influxdb", "uid": "P951FEA4DE68E13C5"},
       "fieldConfig": {
         "defaults": {
           "custom": {

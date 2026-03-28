@@ -24,20 +24,12 @@ RUN curl -fsSL \
     https://repo1.maven.org/maven2/org/apache/spark/spark-token-provider-kafka-0-10_2.13/4.0.0/spark-token-provider-kafka-0-10_2.13-4.0.0.jar \
     -o /opt/spark/jars/spark-token-provider-kafka-0-10_2.13-4.0.0.jar && \
     curl -fsSL \
-    https://repo1.maven.org/maven2/org/apache/commons/commons-pool2/2.11.1/commons-pool2-2.11.1.jar \
-    -o /opt/spark/jars/commons-pool2-2.11.1.jar
+    https://repo1.maven.org/maven2/org/apache/commons/commons-pool2/2.12.0/commons-pool2-2.12.0.jar \
+    -o /opt/spark/jars/commons-pool2-2.12.0.jar
 
 ENV PYSPARK_PYTHON=python3
 ENV PYSPARK_DRIVER_PYTHON=python3
 
 USER spark
 
-# Copiar scripts de entrypoint
-COPY entrypoint-master.sh /opt/spark/entrypoint-master.sh
-COPY entrypoint-worker.sh /opt/spark/entrypoint-worker.sh
 
-RUN chmod +x /opt/spark/entrypoint-master.sh /opt/spark/entrypoint-worker.sh
-
-# Definir un entrypoint por defecto (opcional)
-# Para master: CMD ["/opt/spark/entrypoint-master.sh"]
-# Para worker: CMD ["/opt/spark/entrypoint-worker.sh", "spark://spark-master:7077"]
