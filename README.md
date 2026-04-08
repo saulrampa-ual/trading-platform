@@ -113,10 +113,7 @@ Deja esta terminal corriendo y abre una nueva para el paso siguiente.
 
 ### 8. Lanza el job de Spark
 ```bash
-docker exec spark-master \
-  /opt/spark/bin/spark-submit \
-  --master spark://spark-master:7077 \
-  /opt/spark/apps/ohlc_processor.py
+docker exec spark-master /opt/spark/bin/spark-submit --master spark://spark-master:7077 /opt/spark/apps/ohlc_processor.py
 ```
 
 Cuando veas lo siguiente el pipeline está funcionando de extremo a extremo:
