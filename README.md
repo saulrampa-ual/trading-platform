@@ -60,7 +60,8 @@ Abre `producer/finnhub_producer.py` y sustituye:
 ```python
 FINNHUB_TOKEN = "TU_TOKEN_AQUI"
 ```
-
+### 3.1 instalar python : " python.exe -m pip install --upgrade pip
+### 3.2 instalar requerimientos: " pip install -r examples/requirements.txt 
 ### 4. Construye y levanta la infraestructura Docker
 ```bash
 # Primera vez: construye la imagen Spark personalizada
